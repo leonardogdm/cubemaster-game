@@ -5,7 +5,7 @@ import CannonDebugger from "cannon-es-debugger";
 
 import {
   createGameElements,
-  updateCannonDebugger,
+  clearGame,
   playerBody,
   player,
   camera,
@@ -26,11 +26,12 @@ import "./style.css";
 // HTML Elements
 const pointsUI = document.querySelector("#points");
 const pointsGO = document.querySelector("#pointsGameOver");
+const pointsWG = document.querySelector("#pointsWinGame");
 const popupStartGame = document.querySelector("#popupStartGame");
 const popupGameOver = document.querySelector("#popupGameOver");
+const popupWinGame = document.querySelector("#popupWinGame");
 const startGameButton = document.querySelector("#startGameButton");
 const gameOverButton = document.querySelector("#gameOverButton");
-const gameOverLabel = document.querySelector("#gameOverLabel");
 
 // States
 let points = 0;
@@ -77,6 +78,7 @@ function restartGame() {
   resetObstacles(powerups, -10);
   resetObstacles(enemies, -10);
 
+  clearGame(scene, world);
   createGameElements(scene, world);
 }
 
@@ -96,9 +98,17 @@ function animate() {
   if (!gameOver) {
     moveObstacles(powerups, 0.02, -10, camera);
     moveObstacles(enemies, 0.03, -10, camera);
+
+    if (points === 10) {
+      pointsWG.innerHTML = points.toString();
+      popupWinGame.style.display = "flex";
+      scene.remove(player);
+      world.removeBody(playerBody);
+      playerBody.velocity.set(0, 3, 3);
+      gameOver = true;
+    }
   } else {
-    pointsGO.innerHTML = "Game Over";
-    gameOverLabel.innerHTML = "died ⚰️";
+    pointsGO.innerHTML = points.toString();
     popupGameOver.style.display = "flex";
     scene.remove(player);
     world.removeBody(playerBody);
@@ -111,7 +121,7 @@ function animate() {
   player.position.copy(playerBody.position);
   player.quaternion.copy(playerBody.quaternion);
 
-  updateCannonDebugger(cannonDebugger);
+  cannonDebugger.update();
   renderer.render(scene, camera);
 }
 
@@ -171,26 +181,13 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-window.addEventListener("keyup", (e) => {
-  if (
-    e.key === "d" ||
-    e.key === "D" ||
-    e.key === "ArrowRight" ||
-    e.key === "a" ||
-    e.key === "A" ||
-    e.key === "ArrowLeft"
-  ) {
-    playerBody.velocity.x = 0;
-  }
-});
-
 // E.L Game
 startGameButton.addEventListener("click", () => {
   initGame();
-  animate(false);
+  animate();
 });
 
 gameOverButton.addEventListener("click", () => {
   restartGame();
-  animate(false);
+  // animate();
 });

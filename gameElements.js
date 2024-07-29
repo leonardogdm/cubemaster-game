@@ -28,12 +28,7 @@ let enemies = [];
 let particles;
 
 function createGameElements(scene, world) {
-  // Limpa a cena e o mundo de física
-  while (scene.children.length > 0) {
-    scene.remove(scene.children[0]);
-  }
-  world.bodies = [];
-
+  // Camera
   camera.position.z = 5.5;
   camera.position.y = 1.5;
 
@@ -52,6 +47,8 @@ function createGameElements(scene, world) {
   scene.add(ground);
 
   // Recria o player
+  // playerBody.position.set(0, 0, 0);
+  // player.position.set(0, 0, 0);
   world.addBody(playerBody);
   scene.add(player);
 
@@ -147,13 +144,22 @@ function createGameElements(scene, world) {
   scene.add(particles);
 }
 
-function updateCannonDebugger(cannonDebugger) {
-  cannonDebugger.update();
+function clearGame(scene, world) {
+  while (scene.children.length > 0) {
+    scene.remove(scene.children[0]);
+  }
+
+  world.bodies.forEach((body) => {
+    world.removeBody(body);
+  });
+
+  powerups = [];
+  enemies = [];
 }
 
 export {
   createGameElements,
-  updateCannonDebugger,
+  clearGame,
   playerBody,
   player,
   camera,
