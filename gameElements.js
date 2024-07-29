@@ -12,8 +12,9 @@ const playerBody = new CANNON.Body({
 
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(0.5, 0.5, 0.5),
-  new THREE.MeshBasicMaterial({ color: 0xfff })
+  new THREE.MeshStandardMaterial({ color: 0xfff })
 );
+player.castShadow = true;
 
 // Camera
 const camera = new THREE.PerspectiveCamera(
@@ -23,6 +24,18 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
+// Shadow
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+// directionalLight.position.set(10, 50, -30);
+directionalLight.position.set(3, 5, 5);
+directionalLight.castShadow = true;
+
+directionalLight.shadow.mapSize.width = window.innerWidth; // padrão
+directionalLight.shadow.mapSize.height = window.innerHeight; // padrão
+directionalLight.shadow.camera.near = 0.9; // padrão
+directionalLight.shadow.camera.far = 500; // padrão
+
+// States
 let powerups = [];
 let enemies = [];
 let particles;
@@ -41,16 +54,18 @@ function createGameElements(scene, world) {
 
   const ground = new THREE.Mesh(
     new THREE.BoxGeometry(10, 1, 30),
-    new THREE.MeshBasicMaterial({ color: 0x0075cd })
+    new THREE.MeshStandardMaterial({ color: 0x0075cd })
   );
   ground.position.y = -1;
+  ground.receiveShadow = true;
   scene.add(ground);
 
   // Recria o player
-  // playerBody.position.set(0, 0, 0);
-  // player.position.set(0, 0, 0);
   world.addBody(playerBody);
   scene.add(player);
+
+  // Recria a luz
+  scene.add(directionalLight);
 
   // Recria os powerups
   powerups = [];
@@ -60,12 +75,14 @@ function createGameElements(scene, world) {
 
     const powerup = new THREE.Mesh(
       new THREE.TorusGeometry(1, 0.4, 16, 50),
-      new THREE.MeshBasicMaterial({ color: 0xffff00 })
+      new THREE.MeshStandardMaterial({ color: 0xffff00 })
     );
     powerup.scale.set(0.1, 0.1, 0.1);
     powerup.position.x = posX;
     powerup.position.z = posZ;
     powerup.name = "powerup" + [i + 1];
+    powerup.castShadow = true;
+    powerup.receiveShadow = true;
     scene.add(powerup);
 
     const powerupBody = new CANNON.Body({
@@ -92,11 +109,13 @@ function createGameElements(scene, world) {
 
     const enemy = new THREE.Mesh(
       new THREE.BoxGeometry(0.8, 0.8, 0.8),
-      new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      new THREE.MeshStandardMaterial({ color: 0xff0000 })
     );
     enemy.position.x = posX;
     enemy.position.z = posZ;
     enemy.name = "enemy" + [i + 1];
+    enemy.castShadow = true;
+    enemy.receiveShadow = true;
     scene.add(enemy);
 
     const enemyBody = new CANNON.Body({

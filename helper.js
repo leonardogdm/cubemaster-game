@@ -55,7 +55,7 @@ export const randomLanePosition = () => {
   return lanePositions[randomIndex];
 };
 
-export const moveObstacles = (arr, speed, maxZ, camera) => {
+export const moveObstacles = (arr, speed, maxZ, camera, itsCoin) => {
   arr.forEach((el) => {
     el.body.position.z += speed;
     if (el.body.position.z > camera.position.z) {
@@ -63,6 +63,12 @@ export const moveObstacles = (arr, speed, maxZ, camera) => {
       el.body.position.z = maxZ;
     }
     el.mesh.position.copy(el.body.position);
+
+    if (itsCoin) {
+      el.mesh.rotation.y += 0.02;
+      return;
+    }
+
     el.mesh.quaternion.copy(el.body.quaternion);
   });
 };

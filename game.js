@@ -53,6 +53,8 @@ const cannonDebugger = new CannonDebugger(scene, world, {
 // Renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // Controls
@@ -96,16 +98,15 @@ function animate() {
 
   // Handle game status
   if (!gameOver) {
-    moveObstacles(powerups, 0.02, -10, camera);
-    moveObstacles(enemies, 0.03, -10, camera);
+    moveObstacles(powerups, 0.03, -10, camera, true);
+    moveObstacles(enemies, 0.03, -10, camera, false);
 
-    if (points === 10) {
+    if (points === 20) {
       pointsWG.innerHTML = points.toString();
       popupWinGame.style.display = "flex";
       scene.remove(player);
       world.removeBody(playerBody);
       playerBody.velocity.set(0, 3, 3);
-      gameOver = true;
     }
   } else {
     pointsGO.innerHTML = points.toString();
@@ -121,7 +122,7 @@ function animate() {
   player.position.copy(playerBody.position);
   player.quaternion.copy(playerBody.quaternion);
 
-  cannonDebugger.update();
+  // cannonDebugger.update();
   renderer.render(scene, camera);
 }
 
