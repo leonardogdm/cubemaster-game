@@ -2,7 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/cpx.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cube Master</title>
   </head>
@@ -10,6 +10,20 @@
     <div id="ui">
       <h1>Points: <span id="points">00</span></h1>
     </div>
-    <script type="module" src="/main.js"></script>
+    <div id="popupStartGame" style="display: flex">
+      <h1 id="startGameText">Cube Master</h1>
+      <p>Collect all points are possible 🪙</p>
+      <p>Don't crash in enemies, you die ☠️</p>
+      <p>Click in the button to start game 🎮</p>
+      <button id="startGameButton">START</button>
+    </div>
+    <div id="popupGameOver" style="display: none">
+      <h1 id="gameOverText">Game Over</h1>
+      <p>You <span id="gameOverLabel"></span></p>
+      <p>You colect <span id="pointsGameOver">00</span> Points 🪙</p>
+      <p>Click in the button to restart game 🎮</p>
+      <button id="gameOverButton">RESTART</button>
+    </div>
+    <script type="module" src="/game.js"></script>
   </body>
 </html>
