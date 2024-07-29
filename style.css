@@ -5,6 +5,10 @@ body {
   overflow: hidden;
 }
 
+* {
+  font-family: 'Courier New', Courier, monospace;
+}
+
 h1 {
   color: whitesmoke;
 }
@@ -32,10 +36,10 @@ button:hover {
   font-style: italic;
   font-weight: bold;
   text-shadow:
-    5px 5px 0 #260255,
-    5px 3px 0 #260255,
-    1px -1px 0 #260255,
-    -1px -1px 0 #260255;
+    5px 5px 0 #131214,
+    5px 3px 0 #131214,
+    1px -1px 0 #131214,
+    -1px -1px 0 #131214;
 }
 
 #popupStartGame button,

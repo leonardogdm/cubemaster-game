@@ -8,16 +8,19 @@ import {
   updateCannonDebugger,
   playerBody,
   player,
+  camera,
   powerups,
   enemies,
   particles,
 } from "./gameElements";
+
 import {
+  movePlayer,
   moveObstacles,
   randomLanePosition,
-  randomRangeNum,
   resetObstacles,
 } from "./helper";
+
 import "./style.css";
 
 // HTML Elements
@@ -29,7 +32,7 @@ const startGameButton = document.querySelector("#startGameButton");
 const gameOverButton = document.querySelector("#gameOverButton");
 const gameOverLabel = document.querySelector("#gameOverLabel");
 
-// Points
+// States
 let points = 0;
 let gameStart;
 let gameOver;
@@ -40,24 +43,11 @@ const world = new CANNON.World({
   gravity: new CANNON.Vec3(0, -9.82, 0), // World gravity
 });
 
-// Player
-let currentLane = 1; // 0 - left, 1 - middle, 2 - right
-
 // Debugger
 const cannonDebugger = new CannonDebugger(scene, world, {
   color: "#AEE2FF",
   scale: 1,
 });
-
-// Camera
-const camera = new THREE.PerspectiveCamera(
-  60,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
-camera.position.z = 4.5;
-camera.position.y = 1.5;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer();
@@ -73,8 +63,8 @@ function initGame() {
   points = 0;
   pointsUI.innerHTML = points.toString();
   popupStartGame.style.display = "none";
-  resetObstacles(powerups, -5, -10);
-  resetObstacles(enemies, -5, -10);
+  resetObstacles(powerups, -10);
+  resetObstacles(enemies, -10);
 
   createGameElements(scene, world);
 }
@@ -84,65 +74,28 @@ function restartGame() {
   points = 0;
   pointsUI.innerHTML = points.toString();
   popupGameOver.style.display = "none";
-  resetObstacles(powerups, -5, -10);
-  resetObstacles(enemies, -5, -10);
+  resetObstacles(powerups, -10);
+  resetObstacles(enemies, -10);
 
   createGameElements(scene, world);
 }
 
-function movePlayer(direction) {
-  const directionLeft = direction === "left";
-  const directionRight = direction === "right";
-  const directionUp = direction === "up";
-  const directionDown = direction === "down";
-  console.log(playerBody.position.y);
-  const playerIsFloor =
-    playerBody.position.y < -0.25 && playerBody.position.y > -0.26;
-
-  if (directionLeft && currentLane > 0 && playerIsFloor) {
-    currentLane--;
-    playerBody.velocity.x = -45;
-  } else if (directionRight && currentLane < 2 && playerIsFloor) {
-    currentLane++;
-    playerBody.velocity.x = 45;
-  } else if (directionUp && playerIsFloor) {
-    playerBody.velocity.y = 6;
-  } else if (directionDown && !playerIsFloor) {
-    playerBody.velocity.y = -5.5;
-  } else if (directionLeft && !playerIsFloor) {
-    if (currentLane == 1) {
-      playerBody.position.x = -1;
-    }
-    if (currentLane == 2) {
-      playerBody.position.x = 0;
-    }
-
-    currentLane--;
-  } else if (directionRight && !playerIsFloor) {
-    if (currentLane == 0) {
-      playerBody.position.x = 0;
-    }
-    if (currentLane == 1) {
-      playerBody.position.x = 1;
-    }
-
-    currentLane++;
-  } else {
-    return;
-  }
-}
-
-// Animate Loop
+// Animate Loop Game
 function animate() {
   requestAnimationFrame(animate);
 
+  // Sky particles
   particles.rotation.x += 0.0001;
   particles.rotation.y += 0.0001;
   particles.rotation.z += 0.0005;
 
+  // Câmera
+  camera.position.x = playerBody.position.x;
+
+  // Handle game status
   if (!gameOver) {
-    moveObstacles(powerups, 0.02, -5, -10, camera);
-    moveObstacles(enemies, 0.03, -5, -10, camera);
+    moveObstacles(powerups, 0.02, -10, camera);
+    moveObstacles(enemies, 0.03, -10, camera);
   } else {
     pointsGO.innerHTML = "Game Over";
     gameOverLabel.innerHTML = "died ⚰️";
@@ -174,7 +127,7 @@ playerBody.addEventListener("collide", (e) => {
   powerups.forEach((el) => {
     if (e.body === el.body) {
       el.body.position.x = randomLanePosition();
-      el.body.position.z = randomRangeNum(-5, -10);
+      el.body.position.z = -10;
       el.mesh.position.copy(el.body.position);
       el.mesh.quaternion.copy(el.body.quaternion);
       points += 1;
@@ -191,19 +144,19 @@ playerBody.addEventListener("collide", (e) => {
 window.addEventListener("keydown", (e) => {
   // Player Controls
   if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") {
-    movePlayer("right");
+    movePlayer("right", playerBody);
   }
 
   if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") {
-    movePlayer("left");
+    movePlayer("left", playerBody);
   }
 
   if (e.key === " " || e.key == "w" || e.key === "W" || e.key === "ArrowUp") {
-    movePlayer("up");
+    movePlayer("up", playerBody);
   }
 
   if (e.key === "s" || e.key == "S" || e.key === "ArrowDown") {
-    movePlayer("down");
+    movePlayer("down", playerBody);
   }
 
   // Game Controls

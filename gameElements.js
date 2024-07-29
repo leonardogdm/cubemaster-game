@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 
-import { randomLanePosition, randomRangeNum } from "./helper";
+import { randomLanePosition } from "./helper";
 
+// Player
 const playerBody = new CANNON.Body({
   mass: 1,
   shape: new CANNON.Box(new CANNON.Vec3(0.25, 0.25, 0.25)),
@@ -12,6 +13,14 @@ const playerBody = new CANNON.Body({
 const player = new THREE.Mesh(
   new THREE.BoxGeometry(0.5, 0.5, 0.5),
   new THREE.MeshBasicMaterial({ color: 0xfff })
+);
+
+// Camera
+const camera = new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
 );
 
 let powerups = [];
@@ -24,6 +33,9 @@ function createGameElements(scene, world) {
     scene.remove(scene.children[0]);
   }
   world.bodies = [];
+
+  camera.position.z = 5.5;
+  camera.position.y = 1.5;
 
   // Recria o ground
   const groundBody = new CANNON.Body({
@@ -47,7 +59,7 @@ function createGameElements(scene, world) {
   powerups = [];
   for (let i = 0; i < 3; i++) {
     const posX = randomLanePosition();
-    const posZ = randomRangeNum(-5, -10);
+    const posZ = -10;
 
     const powerup = new THREE.Mesh(
       new THREE.TorusGeometry(1, 0.4, 16, 50),
@@ -79,7 +91,7 @@ function createGameElements(scene, world) {
   enemies = [];
   for (let i = 0; i < 2; i++) {
     const posX = randomLanePosition();
-    const posZ = randomRangeNum(-5, -10);
+    const posZ = -10;
 
     const enemy = new THREE.Mesh(
       new THREE.BoxGeometry(0.8, 0.8, 0.8),
@@ -144,6 +156,7 @@ export {
   updateCannonDebugger,
   playerBody,
   player,
+  camera,
   powerups,
   enemies,
   particles,
