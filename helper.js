@@ -11,11 +11,13 @@ export function movePlayer(direction, playerBody) {
 
   if (directionLeft && currentLane > 0 && playerIsFloor) {
     currentLane--;
-    playerBody.velocity.x = -45;
+    // playerBody.velocity.x = -45;
+    playerBody.position.x -= 1;
     return;
   } else if (directionRight && currentLane < 2 && playerIsFloor) {
     currentLane++;
-    playerBody.velocity.x = 45;
+    // playerBody.velocity.x = 45;
+    playerBody.position.x += 1;
     return;
   } else if (directionUp && playerIsFloor) {
     playerBody.velocity.y = 6;
@@ -73,12 +75,6 @@ export const moveObstacles = (arr, speed, maxZ, camera, itsCoin) => {
   });
 };
 
-export const resetObstacles = (arr, maxZ) => {
-  arr.forEach((el) => {
-    el.body.position.x = randomLanePosition();
-    el.body.position.z = maxZ;
-    el.body.velocity.set(0, 0, 0);
-    el.mesh.position.copy(el.body.position);
-    el.mesh.quaternion.copy(el.body.quaternion);
-  });
-};
+export function clearLanePosition() {
+  return (currentLane = 1);
+}

@@ -22,7 +22,7 @@ import {
   movePlayer,
   moveObstacles,
   randomLanePosition,
-  resetObstacles,
+  clearLanePosition,
 } from "./helper";
 
 import "./style.css";
@@ -67,27 +67,34 @@ const controls = new OrbitControls(camera, renderer.domElement);
 // Handle Game Functions
 function initGame() {
   gameStart = true;
+  gameOver = false;
   points = 0;
   pointsUI.innerHTML = points.toString();
   popupStartGame.style.display = "none";
-  resetObstacles(powerups, -10);
-  resetObstacles(enemies, -10);
+  popupGameOver.style.display = "none";
+  popupWinGame.style.display = "none";
+
+  clearLanePosition();
 
   if (bgSound.isPlaying) bgSound.stop();
   if (coinSound.isPlaying) coinSound.stop();
   if (gameOverSound.isPlaying) gameOverSound.stop();
   if (winGameSound.isPlaying) winGameSound.stop();
 
+  clearGame(scene, world);
   createGameElements(scene, world);
+  animate();
 }
 
 function restartGame() {
+  gameStart = true;
   gameOver = false;
   points = 0;
   pointsUI.innerHTML = points.toString();
   popupGameOver.style.display = "none";
-  resetObstacles(powerups, -10);
-  resetObstacles(enemies, -10);
+  popupWinGame.style.display = "none";
+
+  clearLanePosition();
 
   if (bgSound.isPlaying) bgSound.stop();
   if (coinSound.isPlaying) coinSound.stop();
@@ -195,22 +202,18 @@ window.addEventListener("keydown", (e) => {
   // Game Controls
   if (e.key === "enter" || (e.key === "Enter" && !gameStart)) {
     initGame();
-    animate();
   }
 
   if ((gameOver && e.key === "r") || e.key === "R") {
     restartGame();
-    animate();
   }
 });
 
 // E.L Game
 startGameButton.addEventListener("click", () => {
   initGame();
-  animate();
 });
 
 gameOverButton.addEventListener("click", () => {
   restartGame();
-  // animate();
 });

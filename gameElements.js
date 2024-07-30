@@ -101,6 +101,8 @@ function createGameElements(scene, world) {
   scene.add(highlightGround);
 
   // Recria o player
+  playerBody.position.set(0, 0, 0);
+  playerBody.velocity.set(0, 0, 0);
   world.addBody(playerBody);
   scene.add(player);
 
