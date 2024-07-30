@@ -12,6 +12,10 @@ import {
   powerups,
   enemies,
   particles,
+  coinSound,
+  gameOverSound,
+  winGameSound,
+  bgSound,
 } from "./gameElements";
 
 import {
@@ -69,6 +73,11 @@ function initGame() {
   resetObstacles(powerups, -10);
   resetObstacles(enemies, -10);
 
+  if (bgSound.isPlaying) bgSound.stop();
+  if (coinSound.isPlaying) coinSound.stop();
+  if (gameOverSound.isPlaying) gameOverSound.stop();
+  if (winGameSound.isPlaying) winGameSound.stop();
+
   createGameElements(scene, world);
 }
 
@@ -79,6 +88,11 @@ function restartGame() {
   popupGameOver.style.display = "none";
   resetObstacles(powerups, -10);
   resetObstacles(enemies, -10);
+
+  if (bgSound.isPlaying) bgSound.stop();
+  if (coinSound.isPlaying) coinSound.stop();
+  if (gameOverSound.isPlaying) gameOverSound.stop();
+  if (winGameSound.isPlaying) winGameSound.stop();
 
   clearGame(scene, world);
   createGameElements(scene, world);
@@ -100,13 +114,15 @@ function animate() {
   if (!gameOver) {
     moveObstacles(powerups, 0.03, -10, camera, true);
     moveObstacles(enemies, 0.03, -10, camera, false);
-
+    bgSound.play();
     if (points === 20) {
       pointsWG.innerHTML = points.toString();
       popupWinGame.style.display = "flex";
       scene.remove(player);
       world.removeBody(playerBody);
       playerBody.velocity.set(0, 3, 3);
+      if (bgSound.isPlaying) bgSound.stop();
+      winGameSound.play();
     }
   } else {
     pointsGO.innerHTML = points.toString();
@@ -114,6 +130,7 @@ function animate() {
     scene.remove(player);
     world.removeBody(playerBody);
     playerBody.velocity.set(0, 3, 3);
+    if (bgSound.isPlaying) bgSound.stop();
   }
 
   controls.update();
@@ -143,11 +160,16 @@ playerBody.addEventListener("collide", (e) => {
       el.mesh.quaternion.copy(el.body.quaternion);
       points += 1;
       pointsUI.innerHTML = points.toString();
+
+      if (coinSound.isPlaying) coinSound.stop();
+      coinSound.play();
     }
   });
   enemies.forEach((el) => {
     if (e.body === el.body) {
       gameOver = true;
+      if (gameOverSound.isPlaying) gameOverSound.stop();
+      gameOverSound.play();
     }
   });
 });

@@ -24,9 +24,37 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 
+// Sounds
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+const coinSound = new THREE.Audio(listener);
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load("public/audios/coin.mp3", function (buffer) {
+  coinSound.setBuffer(buffer);
+  coinSound.setVolume(0.5);
+});
+
+const gameOverSound = new THREE.Audio(listener);
+audioLoader.load("public/audios/gameOver.mp3", function (buffer) {
+  gameOverSound.setBuffer(buffer);
+  gameOverSound.setVolume(0.5);
+});
+
+const winGameSound = new THREE.Audio(listener);
+audioLoader.load("public/audios/winGame.mp3", function (buffer) {
+  winGameSound.setBuffer(buffer);
+  winGameSound.setVolume(0.5);
+});
+
+const bgSound = new THREE.Audio(listener);
+audioLoader.load("public/audios/bgMusic.mp3", function (buffer) {
+  bgSound.setBuffer(buffer);
+  bgSound.setVolume(0.5);
+});
+
 // Shadow
 const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-// directionalLight.position.set(10, 50, -30);
 directionalLight.position.set(3, 5, 5);
 directionalLight.castShadow = true;
 
@@ -45,7 +73,7 @@ function createGameElements(scene, world) {
   camera.position.z = 5.5;
   camera.position.y = 1.5;
 
-  // Recria o ground
+  // Recria o ground e textura
   const groundBody = new CANNON.Body({
     shape: new CANNON.Box(new CANNON.Vec3(1.5, 0.5, 15)),
   });
@@ -54,11 +82,23 @@ function createGameElements(scene, world) {
 
   const ground = new THREE.Mesh(
     new THREE.BoxGeometry(10, 1, 30),
-    new THREE.MeshStandardMaterial({ color: 0x0075cd })
+    new THREE.MeshStandardMaterial({ color: 0x00ff00 })
   );
   ground.position.y = -1;
   ground.receiveShadow = true;
   scene.add(ground);
+
+  const highlightGround = new THREE.Mesh(
+    new THREE.PlaneGeometry(3, 30, 30),
+    new THREE.MeshStandardMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.5,
+    })
+  );
+  highlightGround.position.y = -0.49;
+  highlightGround.rotation.x = -Math.PI / 2;
+  scene.add(highlightGround);
 
   // Recria o player
   world.addBody(playerBody);
@@ -123,7 +163,7 @@ function createGameElements(scene, world) {
       collisionResponse: false,
     });
 
-    enemyBody.position.set(posX, 0, posZ);
+    enemyBody.position.set(posX, -0.1, posZ);
     world.addBody(enemyBody);
 
     const enemyObject = {
@@ -182,6 +222,10 @@ export {
   playerBody,
   player,
   camera,
+  coinSound,
+  gameOverSound,
+  winGameSound,
+  bgSound,
   powerups,
   enemies,
   particles,
